@@ -12,7 +12,12 @@ const ROWS     = 15;   // number of employee rows
 const DAYS     = 7;    // days shown per sheet
 
 // ---------- DATABASE ----------
-$db = new PDO('sqlite:' . __DIR__ . '/payroll_sheet.sqlite');
+$srcDb  = __DIR__ . '/../payroll_sheet.sqlite';
+$dbPath = is_writable(dirname($srcDb)) ? $srcDb : '/tmp/payroll_sheet.sqlite';
+if ($dbPath !== $srcDb && !file_exists($dbPath) && file_exists($srcDb)) {
+    copy($srcDb, $dbPath);
+}
+$db = new PDO('sqlite:' . $dbPath);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->exec("CREATE TABLE IF NOT EXISTS sheets (
     start_date TEXT PRIMARY KEY,
